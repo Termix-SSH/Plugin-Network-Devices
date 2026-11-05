@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "tables": {
+    "devices": {
+      "columns": {
+        "id": {
+          "type": "id",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "createdBy": {
+          "type": "refUser",
+          "length": 255,
+          "notNull": true
+        },
+        "name": {
+          "type": "varchar",
+          "length": 100,
+          "notNull": true
+        },
+        "driver": {
+          "type": "varchar",
+          "length": 16,
+          "notNull": true
+        },
+        "address": {
+          "type": "varchar",
+          "length": 255,
+          "notNull": true
+        },
+        "port": {
+          "type": "integer"
+        },
+        "credentials": {
+          "type": "text",
+          "notNull": true
+        },
+        "ca": {
+          "type": "text"
+        },
+        "options": {
+          "type": "text",
+          "notNull": true
+        },
+        "pollSeconds": {
+          "type": "integer",
+          "notNull": true
+        },
+        "status": {
+          "type": "varchar",
+          "length": 8,
+          "notNull": true
+        },
+        "lastError": {
+          "type": "text"
+        },
+        "lastSeenAt": {
+          "type": "timestamp"
+        },
+        "snapshot": {
+          "type": "text"
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "notNull": true,
+          "defaultNow": true
+        }
+      },
+      "indexes": [
+        {
+          "name": "uq_p_network_devices_devices_name",
+          "columns": [
+            "name"
+          ],
+          "unique": true
+        }
+      ]
+    }
+  }
+}
