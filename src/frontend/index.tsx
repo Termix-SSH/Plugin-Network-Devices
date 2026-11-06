@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { networkWidget } from "./HomepageWidget";
 import { Network, Pencil, Radar, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -297,6 +298,8 @@ export function activate(app: TermixApp): void {
     singleton: true,
     hostless: true,
   });
+  app.registerExtension("homepage.widgets", networkWidget(app.t));
+
   app.registerDashboardCard({
     id: "network-devices",
     titleKey: "card.title",

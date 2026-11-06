@@ -171,5 +171,10 @@
     "health": {
       "title": "Network devices"
     }
+  },
+  "widget": {
+    "name": "Network devices",
+    "description": "Which of your routers, switches and access points are up.",
+    "summary": "{{up}} of {{total}} up"
   }
 }
