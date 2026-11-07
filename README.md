@@ -4,7 +4,7 @@
 
 <h1>Network Devices</h1>
 
-<p>See and manage routers, switches and access points</p>
+<p>See and manage routers, switches and access points over SNMP and router APIs</p>
 
 </div>
 
@@ -28,6 +28,7 @@ Read the [docs](https://docs.termix.site/plugins/network-devices) to set it up a
 - Turn a port off or on, power cycle PoE and restart a device
 - Find SNMP devices in an address range
 - Keys are stored encrypted and never shown again
+- A dashboard card and Termix actions for rules, the CLI and the assistant
 
 <br />
 
