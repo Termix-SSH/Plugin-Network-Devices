@@ -149,8 +149,14 @@
               "required": true,
               "default": "up",
               "options": [
-                { "value": "up", "labelKey": "operations.stateUp" },
-                { "value": "down", "labelKey": "operations.stateDown" }
+                {
+                  "value": "up",
+                  "labelKey": "operations.stateUp"
+                },
+                {
+                  "value": "down",
+                  "labelKey": "operations.stateDown"
+                }
               ]
             }
           ],
@@ -220,7 +226,8 @@
           "refreshSec": 120
         }
       ]
-    }
+    },
+    "uses": ["homepage.widgets"]
   },
   "locales": "locales",
   "platforms": ["linux", "win32", "darwin"]
