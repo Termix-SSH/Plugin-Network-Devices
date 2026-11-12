@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Termix-SSH/Termix/main/scripts/authz/authz.schema.json",
+  "seed": [],
+  "routes": {
+    "GET /plugin-api/network-devices/devices": {
+      "access": "user",
+      "permission": "network-devices.view"
+    },
+    "POST /plugin-api/network-devices/devices": {
+      "access": "user"
+    },
+    "DELETE /plugin-api/network-devices/devices/:id": {
+      "access": "user",
+      "destructive": true
+    },
+    "PUT /plugin-api/network-devices/devices/:id": {
+      "access": "user"
+    },
+    "GET /plugin-api/network-devices/devices/:id/clients": {
+      "access": "user",
+      "permission": "network-devices.view"
+    },
+    "GET /plugin-api/network-devices/devices/:id/neighbors": {
+      "access": "user",
+      "permission": "network-devices.view"
+    },
+    "POST /plugin-api/network-devices/devices/:id/poll": {
+      "access": "user"
+    },
+    "POST /plugin-api/network-devices/devices/:id/ports/:port/poe-cycle": {
+      "access": "user"
+    },
+    "POST /plugin-api/network-devices/devices/:id/ports/:port/state": {
+      "access": "user"
+    },
+    "POST /plugin-api/network-devices/devices/:id/reboot": {
+      "access": "user",
+      "destructive": true
+    },
+    "POST /plugin-api/network-devices/devices/test": {
+      "access": "user"
+    },
+    "POST /plugin-api/network-devices/discover": {
+      "access": "user"
+    },
+    "GET /plugin-api/network-devices/drivers": {
+      "access": "user",
+      "permission": "network-devices.view"
+    }
+  }
+}
