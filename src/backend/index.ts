@@ -1,6 +1,7 @@
 import type { Router } from "express";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { devices } from "./tables.js";
+import { keepAwake } from "./keep-awake.js";
 import { registerRoutes } from "./routes.js";
 import { registerOperations } from "./operations.js";
 import { createService } from "./service.js";
@@ -17,6 +18,7 @@ export async function activate(ctx: PluginContext) {
   registerRoutes(ctx.http.router<Router>(), ctx, service);
 
   // Each device is read when its own interval has passed.
+  keepAwake(ctx, "poll", true);
   ctx.schedule.after(FIRST_RUN_MS, () => service.runDue());
   ctx.schedule.every(TICK_MS, () => service.runDue(), {
     id: "poll",
