@@ -18,7 +18,10 @@ export async function activate(ctx: PluginContext) {
 
   // Each device is read when its own interval has passed.
   ctx.schedule.after(FIRST_RUN_MS, () => service.runDue());
-  ctx.schedule.every(TICK_MS, () => service.runDue(), { jitterMs: 2_000 });
+  ctx.schedule.every(TICK_MS, () => service.runDue(), {
+    id: "poll",
+    jitterMs: 2_000,
+  });
 }
 
 export async function deactivate() {
