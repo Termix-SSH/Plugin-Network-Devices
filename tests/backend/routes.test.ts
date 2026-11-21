@@ -18,6 +18,8 @@ const pluginDir = fileURLToPath(new URL("../..", import.meta.url));
 const manifest = manifestJson as unknown as PluginManifest;
 
 let refuse = false;
+let config =
+  "# by RouterOS 7\r\n/ip address\r\nadd address=10.0.0.1/24 interface=ether1\r\n";
 let up = true;
 const router = fakeFetch((url, init) => {
   if (url.hostname !== "10.0.0.1") return undefined;
@@ -32,6 +34,11 @@ const router = fakeFetch((url, init) => {
     });
   }
   if (path === "/rest/system/identity") return json({ name: "edge" });
+  if (path === "/rest/file") {
+    return json([
+      { ".id": "*F1", contents: config, size: String(config.length) },
+    ]);
+  }
   if (path === "/rest/interface") {
     return json([
       {
@@ -130,7 +137,7 @@ describe("devices", () => {
   it("lists the device types", async () => {
     const result = await request("GET", "/drivers");
     expect(result.body.drivers.map((d: { id: string }) => d.id).sort()).toEqual(
-      ["openwrt", "opnsense", "routeros", "snmp"],
+      ["cisco", "openwrt", "opnsense", "pfsense", "routeros", "snmp", "unifi"],
     );
   });
 
@@ -341,5 +348,89 @@ describe("permissions", () => {
     await setup([]);
     expect((await request("GET", "/devices")).status).toBe(403);
     expect((await request("GET", "/drivers")).status).toBe(403);
+  });
+});
+
+describe("saved configurations", () => {
+  it("are saved only when they change, sealed, and listed newest first", async () => {
+    const id = await addDevice({ options: { configKeep: 5 } });
+    const first = await request("POST", `/devices/${id}/configs`);
+    expect(first.status).toBe(200);
+    expect(first.body.changed).toBe(true);
+    expect(router.calls.some((c) => c.url.endsWith("/rest/export"))).toBe(true);
+    expect(router.calls.some((c) => c.init.method === "DELETE")).toBe(true);
+
+    const again = await request("POST", `/devices/${id}/configs`);
+    expect(again.body.changed).toBe(false);
+
+    config = config.replace("10.0.0.1/24", "10.0.0.2/24");
+    const changed = await request("POST", `/devices/${id}/configs`);
+    expect(changed.body.changed).toBe(true);
+
+    const list = await request("GET", `/devices/${id}/configs`);
+    expect(list.body.configs).toHaveLength(2);
+    expect(list.body.configs[0].id).toBe(changed.body.config.id);
+
+    const read = await request(
+      "GET",
+      `/devices/${id}/configs/${changed.body.config.id}`,
+    );
+    expect(read.body.content).toContain("10.0.0.2/24");
+    expect(read.body.content).not.toContain(String.fromCharCode(13));
+
+    const raw = db.sqlite
+      .prepare("SELECT content FROM p_network_devices_configs")
+      .all() as Array<{ content: string }>;
+    expect(raw.every((r) => !r.content.includes("10.0.0"))).toBe(true);
+  });
+
+  it("keeps only as many as asked, and alerts on a change when asked", async () => {
+    const id = await addDevice({
+      options: { configKeep: 1, configAlert: true },
+    });
+    await request("POST", `/devices/${id}/configs`);
+    config = config.replace("10.0.0.2/24", "10.0.0.3/24");
+    await request("POST", `/devices/${id}/configs`);
+    const list = await request("GET", `/devices/${id}/configs`);
+    expect(list.body.configs).toHaveLength(1);
+    expect(mock.notifications.map((n) => n.notification.category)).toContain(
+      "network-devices.config_changed",
+    );
+  });
+
+  it("go when the device or the config is deleted", async () => {
+    const id = await addDevice();
+    const saved = await request("POST", `/devices/${id}/configs`);
+    const configId = saved.body.config.id;
+    expect(
+      (await request("DELETE", `/devices/${id}/configs/${configId}`)).status,
+    ).toBe(200);
+    expect(
+      (await request("GET", `/devices/${id}/configs/${configId}`)).status,
+    ).toBe(404);
+    await request("POST", `/devices/${id}/configs`);
+    await request("DELETE", `/devices/${id}`);
+    const left = db.sqlite
+      .prepare("SELECT COUNT(*) AS n FROM p_network_devices_configs")
+      .get() as { n: number };
+    expect(left.n).toBe(0);
+  });
+
+  it("need the manage permission", async () => {
+    const id = await addDevice();
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+    db.close();
+    await setup(["network-devices.view"]);
+    expect((await request("GET", `/devices/${id}/configs`)).status).toBe(403);
+    expect((await request("POST", `/devices/${id}/configs`)).status).toBe(403);
+  });
+
+  it("are refused for device types that cannot save one", async () => {
+    const id = await addDevice({
+      driver: "snmp",
+      credentials: { community: "public" },
+      options: {},
+    });
+    expect((await request("POST", `/devices/${id}/configs`)).status).toBe(400);
   });
 });

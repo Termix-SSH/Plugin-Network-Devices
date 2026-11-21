@@ -26,7 +26,8 @@ Read the [docs](https://docs.termix.site/plugins/network-devices) to set it up a
 
 ## Features
 
-- Any SNMP device (v1, v2c and v3), MikroTik RouterOS, OPNsense and OpenWrt
+- Any SNMP device (v1, v2c and v3), MikroTik RouterOS, OPNsense, OpenWrt, UniFi, pfSense and Cisco IOS
+- Save device configurations on a schedule and compare versions
 - Ports with link state, speed, traffic rates, errors, VLAN and PoE
 - Clients from DHCP, ARP, Wi-Fi and switch MAC tables
 - Neighbors from LLDP and MikroTik discovery

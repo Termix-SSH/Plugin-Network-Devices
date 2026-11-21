@@ -46,6 +46,23 @@
     "GET /plugin-api/network-devices/drivers": {
       "access": "user",
       "permission": "network-devices.view"
+    },
+    "GET /plugin-api/network-devices/devices/:id/configs": {
+      "access": "user",
+      "permission": "network-devices.manage"
+    },
+    "POST /plugin-api/network-devices/devices/:id/configs": {
+      "access": "user",
+      "permission": "network-devices.manage"
+    },
+    "GET /plugin-api/network-devices/devices/:id/configs/:configId": {
+      "access": "user",
+      "permission": "network-devices.manage"
+    },
+    "DELETE /plugin-api/network-devices/devices/:id/configs/:configId": {
+      "access": "user",
+      "permission": "network-devices.manage",
+      "destructive": true
     }
   }
 }

@@ -75,6 +75,49 @@
           "unique": true
         }
       ]
+    },
+    "configs": {
+      "columns": {
+        "id": {
+          "type": "id",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "deviceId": {
+          "type": "integer",
+          "notNull": true
+        },
+        "takenAt": {
+          "type": "timestamp",
+          "notNull": true
+        },
+        "sha256": {
+          "type": "varchar",
+          "length": 64,
+          "notNull": true
+        },
+        "size": {
+          "type": "integer",
+          "notNull": true
+        },
+        "format": {
+          "type": "varchar",
+          "length": 8,
+          "notNull": true
+        },
+        "content": {
+          "type": "text",
+          "notNull": true
+        }
+      },
+      "indexes": [
+        {
+          "name": "idx_p_network_devices_configs_device",
+          "columns": [
+            "deviceId"
+          ]
+        }
+      ]
     }
   }
 }
